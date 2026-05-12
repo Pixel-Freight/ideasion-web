@@ -1,0 +1,184 @@
+@import "tailwindcss";
+
+/* ─── Custom Theme Tokens ─── */
+@theme {
+  --color-bg-base: #05090B;
+  --color-bg-deep-teal: #0D1B22;
+  --color-bg-card: rgba(13, 27, 34, 0.6);
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #8E9CA3;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-hover: rgba(255, 255, 255, 0.25);
+  --color-accent-teal: #1A3A4A;
+  --color-accent-glow: rgba(30, 80, 100, 0.3);
+
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+/* ─── Global Resets ─── */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg-base);
+  color: var(--color-text-primary);
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ─── Selection ─── */
+::selection {
+  background: rgba(30, 80, 100, 0.5);
+  color: #ffffff;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-base);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(142, 156, 163, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(142, 156, 163, 0.5);
+}
+
+/* ─── Utility: Text Stroke for outlined text ─── */
+.text-stroke {
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.25);
+  color: transparent;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.text-stroke-hover:hover {
+  -webkit-text-stroke: 0px transparent;
+  color: #FFFFFF;
+}
+
+/* ─── Bokeh Background Blobs ─── */
+.bokeh-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+/* ─── Glass Overlay ─── */
+.glass-panel {
+  background: rgba(13, 27, 34, 0.3);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
+}
+
+/* ─── Canvas Container ─── */
+.canvas-container {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: auto;
+}
+
+/* ─── Project Row Image ─── */
+.project-image-reveal {
+  pointer-events: none;
+  position: fixed;
+  z-index: 50;
+  width: 420px;
+  height: 280px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+}
+
+.project-image-reveal img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ─── Custom Cursor Styles ─── */
+.cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  background: #FFFFFF;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: difference;
+  transition: width 0.3s ease, height 0.3s ease, background 0.3s ease;
+}
+
+.cursor-dot.expanded {
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  mix-blend-mode: normal;
+}
+
+/* ─── Navigation link underline animation ─── */
+.nav-link {
+  position: relative;
+  display: inline-block;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--color-text-primary);
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* ─── Hero Logo Background ─── */
+.hero-logo-bg {
+  filter: blur(0.3px);
+  will-change: opacity;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 768px) {
+  .project-image-reveal {
+    display: none;
+  }
+
+  body {
+    cursor: auto;
+  }
+
+  .cursor-dot {
+    display: none;
+  }
+}
