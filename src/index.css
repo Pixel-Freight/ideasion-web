@@ -92,6 +92,21 @@ body {
   border: 1px solid var(--color-border);
 }
 
+.section-gutter {
+  padding-left: clamp(2.5rem, 8vw, 8rem);
+  padding-right: clamp(2.5rem, 8vw, 8rem);
+}
+
+.contact-shell {
+  padding-top: clamp(8rem, 14vh, 11rem);
+  padding-bottom: clamp(7rem, 12vh, 10rem);
+}
+
+.footer-shell {
+  padding-top: clamp(5rem, 9vh, 7rem);
+  padding-bottom: clamp(5rem, 9vh, 7rem);
+}
+
 /* ─── Canvas Container ─── */
 .canvas-container {
   position: absolute;

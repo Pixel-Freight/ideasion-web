@@ -44,7 +44,7 @@ export default function ProjectsSection({ onHoverStart, onHoverEnd }: ProjectsSe
     >
       {/* ─── Section Header ─── */}
       <motion.div
-        className="px-8 md:px-16 mb-16 md:mb-20"
+        className="section-gutter mb-16 md:mb-20"
         initial={{ opacity: 0, y: 40 }}
         animate={isInView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.8 }}
@@ -75,7 +75,7 @@ export default function ProjectsSection({ onHoverStart, onHoverEnd }: ProjectsSe
               onHoverEnd()
             }}
           >
-            <div className="flex min-h-[180px] flex-col items-start justify-center gap-5 px-8 py-12 transition-all duration-500 md:min-h-[230px] md:flex-row md:items-center md:justify-between md:px-16 md:py-20">
+            <div className="section-gutter flex min-h-[180px] flex-col items-start justify-center gap-5 py-12 transition-all duration-500 md:min-h-[230px] md:flex-row md:items-center md:justify-between md:py-20">
               {/* Project Name */}
               <h3
                 className={`text-5xl md:text-7xl lg:text-8xl font-light font-display uppercase tracking-tight transition-all duration-500 ${

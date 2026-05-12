@@ -21,12 +21,12 @@ export default function ContactSection({ onHoverStart, onHoverEnd }: ContactSect
     <section
       id="contact"
       ref={sectionRef}
-      className="relative w-full overflow-hidden border-t border-border"
+      className="relative w-full scroll-mt-28 overflow-hidden border-t border-border"
       style={{
         background: 'linear-gradient(180deg, #05090B 0%, #081014 45%, #05090B 100%)',
       }}
     >
-      <div className="grid min-h-[76vh] grid-cols-1 content-between gap-20 px-8 py-24 md:px-16 md:py-28 lg:grid-cols-[1.15fr_0.85fr]">
+      <div className="section-gutter contact-shell grid min-h-[76vh] grid-cols-1 content-between gap-20 lg:grid-cols-[1.15fr_0.85fr]">
         <motion.div
           initial={{ opacity: 0, y: 60 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -62,27 +62,27 @@ export default function ContactSection({ onHoverStart, onHoverEnd }: ContactSect
             onMouseLeave={onHoverEnd}
           >
             hello@ideasion.id
-            <span className="text-lg">→</span>
+            <span className="text-lg">-&gt;</span>
           </a>
         </motion.div>
       </div>
 
       <motion.footer
-        className="grid gap-10 border-t border-border px-8 py-8 md:grid-cols-[1fr_auto_1fr] md:items-center md:px-16"
+        className="section-gutter footer-shell grid gap-16 border-t border-border md:grid-cols-[1fr_1fr] lg:grid-cols-[1fr_auto_1fr]"
         initial={{ opacity: 0, y: 20 }}
         animate={isInView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.8, delay: 0.55 }}
       >
-        <a
-          href="#hero"
-          className="w-fit"
-          onMouseEnter={onHoverStart}
-          onMouseLeave={onHoverEnd}
-        >
-          <img src="/logo.svg" alt="ideasion logo" className="h-7" />
-        </a>
+        <div className="max-w-sm">
+          <span className="mb-5 block font-display text-3xl font-light text-text-primary">
+            Ideasion
+          </span>
+          <p className="text-sm leading-relaxed text-text-secondary">
+            Design will only become a graphic if it cannot solved the problems.
+          </p>
+        </div>
 
-        <nav className="flex flex-wrap gap-x-8 gap-y-3 text-xs uppercase tracking-[0.18em] text-text-secondary">
+        <nav className="flex flex-col gap-4 text-xs uppercase tracking-[0.18em] text-text-secondary md:justify-self-center">
           {footerLinks.map((link) => (
             <a
               key={link.label}
@@ -96,9 +96,17 @@ export default function ContactSection({ onHoverStart, onHoverEnd }: ContactSect
           ))}
         </nav>
 
-        <div className="flex flex-col gap-2 text-xs uppercase tracking-[0.18em] text-text-secondary md:items-end">
-          <span>@ideasion.id</span>
-          <span>© 2026</span>
+        <div className="flex flex-col gap-5 text-sm text-text-secondary md:col-span-2 lg:col-span-1 lg:items-end">
+          <a
+            href="mailto:hello@ideasion.id"
+            className="w-fit text-text-primary transition-colors duration-300 hover:text-text-secondary"
+            onMouseEnter={onHoverStart}
+            onMouseLeave={onHoverEnd}
+          >
+            hello@ideasion.id
+          </a>
+          <span className="text-xs uppercase tracking-[0.18em]">@ideasion.id</span>
+          <span className="text-xs uppercase tracking-[0.18em]">2026</span>
         </div>
       </motion.footer>
     </section>
