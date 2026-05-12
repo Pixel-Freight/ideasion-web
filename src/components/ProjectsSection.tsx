@@ -10,11 +10,11 @@ interface Project {
 }
 
 const projects: Project[] = [
-  { id: 1, name: 'Lumière', category: 'Branding', year: '2025', image: '/projects/branding.png' },
-  { id: 2, name: 'Noir Studio', category: 'Visual Identity', year: '2025', image: '/projects/identity.png' },
-  { id: 3, name: 'Ethereal', category: 'Social Media', year: '2024', image: '/projects/social.png' },
-  { id: 4, name: 'Meridian', category: 'Website', year: '2024', image: '/projects/website.png' },
-  { id: 5, name: 'Pulse', category: 'App Design', year: '2024', image: '/projects/app.png' },
+  { id: 1, name: 'Caca Jewel', category: 'Branding', year: '2025', image: '/projects/branding.png' },
+  { id: 2, name: 'Marsee', category: 'Visual Identity', year: '2025', image: '/projects/identity.png' },
+  { id: 3, name: 'Merci Cafe', category: 'Social Media', year: '2024', image: '/projects/social.png' },
+  { id: 4, name: 'Hana Cafe', category: 'Branding & Social Media', year: '2024', image: '/projects/website.png' },
+  { id: 5, name: 'Pulse', category: 'Website', year: '2024', image: '/projects/app.png' },
 ]
 
 interface ProjectsSectionProps {

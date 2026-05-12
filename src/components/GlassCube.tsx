@@ -40,17 +40,15 @@ function SceneSetup({ onContextLost }: { onContextLost: () => void }) {
 }
 
 const glassMaterialProps = {
-  thickness: 1,
+  thickness: 0.1,
   roughness: 0.1,
   transmission: 1,
-  ior: 1,
-  chromaticAberration: 0.1,
+  ior: 1.27,
+  chromaticAberration: 0.2,
   backside: true,
   samples: 4,
   resolution: 1024,
   attenuationDistance: 3,
-  attenuationColor: '#fffcfcff',
-  color: '#ffffffff',
   envMapIntensity: 0.18,
   reflectivity: 0.04,
   metalness: 0,
@@ -221,11 +219,7 @@ function FloatingCube({ geometry, index, count, scale, radius }: FloatingCubePro
 
   return (
     <mesh ref={meshRef} geometry={geometry} scale={scale}>
-      <MeshTransmissionMaterial
-        {...glassMaterialProps}
-        resolution={index === 0 ? 1024 : 512}
-        samples={index === 0 ? 4 : 3}
-      />
+      <MeshTransmissionMaterial {...glassMaterialProps} />
     </mesh>
   )
 }
@@ -287,6 +281,7 @@ function FallbackCubeGeometry() {
       envMapIntensity: 0.7,
       metalness: 0,
       reflectivity: 0.08,
+      dispersion: 1,
     })
   }, [])
 
@@ -353,7 +348,7 @@ export default function GlassCube() {
         <directionalLight position={[0, 2, 3]} intensity={2} />
 
         <SceneLogo />
-        {useFallback ? <FallbackCubeGeometry /> : <GlassCubeCluster />}
+        {useFallback ? <GlassCubeCluster /> : <GlassCubeCluster />}
 
         <Environment preset="city" background={false} />
       </Canvas>
