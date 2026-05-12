@@ -151,7 +151,7 @@ function SceneLogo() {
   if (!texture) return null
 
   return (
-    <mesh position={[0, 0, -2.2]} scale={[viewport.width * 0.72, viewport.width * 0.2, 1]}>
+    <mesh position={[0, 0, -2.2]} scale={[viewport.width * 0.45, viewport.width * 0.13, 1]}>
       <planeGeometry args={[1, 1]} />
       <meshBasicMaterial
         map={texture}
@@ -234,7 +234,7 @@ function GlassCubeCluster() {
   }, [])
 
   const cubes = [
-    { scale: 0.85, radius: 0.12 },
+    { scale: 1, radius: 0.1 },
     { scale: 0.26, radius: 0.6 },
     { scale: 0.22, radius: 0.7 },
     { scale: 0.3, radius: 0.8 },
@@ -348,7 +348,7 @@ export default function GlassCube() {
         <directionalLight position={[0, 2, 3]} intensity={2} />
 
         <SceneLogo />
-        {useFallback ? <GlassCubeCluster /> : <GlassCubeCluster />}
+        {useFallback ? <FallbackCubeGeometry /> : <GlassCubeCluster />}
 
         <Environment preset="city" background={false} />
       </Canvas>
