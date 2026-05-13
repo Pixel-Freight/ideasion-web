@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
+import { Link } from 'react-router-dom'
 
 interface ContactSectionProps {
   onHoverStart: () => void
@@ -7,10 +8,10 @@ interface ContactSectionProps {
 }
 
 const footerLinks = [
-  { label: 'Branding', href: '#projects' },
-  { label: 'Visual Identity', href: '#projects' },
-  { label: 'Social Media', href: '#projects' },
-  { label: 'Website', href: '#projects' },
+  { label: 'Branding', href: '/services/branding' },
+  { label: 'Visual Identity', href: '/services/visual-identity' },
+  { label: 'Social Media', href: '/services/social-media' },
+  { label: 'Website', href: '/services/website' },
 ]
 
 export default function ContactSection({ onHoverStart, onHoverEnd }: ContactSectionProps) {
@@ -84,15 +85,15 @@ export default function ContactSection({ onHoverStart, onHoverEnd }: ContactSect
 
         <nav className="flex flex-col gap-4 text-xs uppercase tracking-[0.18em] text-text-secondary md:justify-self-center">
           {footerLinks.map((link) => (
-            <a
+            <Link
               key={link.label}
-              href={link.href}
+              to={link.href}
               className="transition-colors duration-300 hover:text-text-primary"
               onMouseEnter={onHoverStart}
               onMouseLeave={onHoverEnd}
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </nav>
 

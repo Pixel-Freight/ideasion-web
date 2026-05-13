@@ -1,7 +1,6 @@
 import { Suspense } from 'react'
 import { motion } from 'framer-motion'
 import GlassCube from './GlassCube'
-import Navigation from './Navigation'
 
 interface HeroProps {
   onHoverStart: () => void
@@ -24,21 +23,7 @@ export default function Hero({ onHoverStart, onHoverEnd }: HeroProps) {
       <div className="bokeh-blob" style={{ width: 200, height: 200, top: '20%', right: '30%', background: '#1e5a6a' }} />
 
       {/* ─── Logo (Small persistent) ─── */}
-      <motion.a
-        href="#hero"
-        className="fixed top-8 left-8 z-50"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-        onMouseEnter={onHoverStart}
-        onMouseLeave={onHoverEnd}
-      >
-        <img src="/logo.svg" alt="ideasion logo" className="h-8" />
-      </motion.a>
-
       {/* ─── Navigation ─── */}
-      <Navigation onHoverStart={onHoverStart} onHoverEnd={onHoverEnd} />
-
       {/* ─── Center: Large Background Logo ─── */}
       {/* ─── 3D Glass Cube ─── */}
       <Suspense fallback={null}>
@@ -51,6 +36,8 @@ export default function Hero({ onHoverStart, onHoverEnd }: HeroProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 1.5 }}
+        onMouseEnter={onHoverStart}
+        onMouseLeave={onHoverEnd}
       >
         <span className="text-xs tracking-[0.3em] uppercase text-text-secondary">Scroll</span>
         <motion.div

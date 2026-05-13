@@ -1,14 +1,20 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import Lenis from 'lenis'
-import Hero from './components/Hero'
-import ProjectsSection from './components/ProjectsSection'
-import ContactSection from './components/ContactSection'
 import CustomCursor from './components/CustomCursor'
+import Navigation from './components/Navigation'
+import { useResponsiveSettings } from './hooks/useResponsiveSettings'
+import HomePage from './pages/HomePage'
+import NotFoundPage from './pages/NotFoundPage'
+import ServicePage from './pages/ServicePage'
+import WorkDetailPage from './pages/WorkDetailPage'
 
 export default function App() {
   const [cursorHovering, setCursorHovering] = useState(false)
+  const [heroInView, setHeroInView] = useState(true)
+  const { isDesktop } = useResponsiveSettings()
+  const location = useLocation()
 
-  // ─── Lenis smooth scrolling ───
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.2,
@@ -27,18 +33,64 @@ export default function App() {
     }
   }, [])
 
+  useEffect(() => {
+    const hero = document.querySelector('#hero')
+    if (!hero) {
+      setHeroInView(false)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setHeroInView(entry.isIntersecting),
+      { threshold: 0, rootMargin: '0px 0px -65% 0px' },
+    )
+
+    observer.observe(hero)
+    return () => observer.disconnect()
+  }, [location.pathname])
+
+  useEffect(() => {
+    if (!location.hash) {
+      window.scrollTo({ top: 0, behavior: 'instant' })
+      return
+    }
+
+    window.requestAnimationFrame(() => {
+      document.querySelector(location.hash)?.scrollIntoView({ behavior: 'smooth' })
+    })
+  }, [location.pathname, location.hash])
+
   const handleHoverStart = () => setCursorHovering(true)
   const handleHoverEnd = () => setCursorHovering(false)
 
   return (
     <>
       <CustomCursor isHovering={cursorHovering} />
+      <Link
+        to="/"
+        className="fixed top-8 left-8 z-50"
+        onMouseEnter={handleHoverStart}
+        onMouseLeave={handleHoverEnd}
+      >
+        <img src="/logo.svg" alt="ideasion logo" className="h-8" />
+      </Link>
+      <Navigation
+        heroInView={heroInView}
+        isDesktop={isDesktop}
+        onHoverStart={handleHoverStart}
+        onHoverEnd={handleHoverEnd}
+      />
 
-      <main className="relative">
-        <Hero onHoverStart={handleHoverStart} onHoverEnd={handleHoverEnd} />
-        <ProjectsSection onHoverStart={handleHoverStart} onHoverEnd={handleHoverEnd} />
-        <ContactSection onHoverStart={handleHoverStart} onHoverEnd={handleHoverEnd} />
-      </main>
+      <Routes>
+        <Route
+          path="/"
+          element={<HomePage onHoverStart={handleHoverStart} onHoverEnd={handleHoverEnd} />}
+        />
+        <Route path="/services/:serviceSlug" element={<ServicePage />} />
+        <Route path="/works/:projectSlug" element={<WorkDetailPage />} />
+        <Route path="/not-found" element={<NotFoundPage />} />
+        <Route path="*" element={<Navigate to="/not-found" replace />} />
+      </Routes>
     </>
   )
 }

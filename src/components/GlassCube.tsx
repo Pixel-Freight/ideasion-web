@@ -3,6 +3,7 @@ import type { RefObject } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Environment, MeshTransmissionMaterial, useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
+import { useResponsiveSettings } from '../hooks/useResponsiveSettings'
 
 function SceneSetup({ onContextLost }: { onContextLost: () => void }) {
   const { scene, gl } = useThree()
@@ -10,7 +11,6 @@ function SceneSetup({ onContextLost }: { onContextLost: () => void }) {
   useEffect(() => {
     scene.background = null
     gl.setClearColor(0x000000, 0)
-    console.log('[GlassCube] Scene setup complete')
 
     const canvas = gl.domElement
     const handleLost = (e: Event) => {
@@ -19,7 +19,6 @@ function SceneSetup({ onContextLost }: { onContextLost: () => void }) {
       onContextLost()
     }
     const handleRestored = () => {
-      console.log('[GlassCube] WebGL Context Restored')
       scene.background = null
       gl.setClearColor(0x000000, 0)
     }
@@ -46,25 +45,23 @@ const glassMaterialProps = {
   ior: 1.27,
   chromaticAberration: 0.2,
   backside: true,
-  samples: 4,
-  resolution: 1024,
   attenuationDistance: 3,
   envMapIntensity: 0.18,
   reflectivity: 0.04,
   metalness: 0,
 }
 
-function useGlassRotation(ref: RefObject<THREE.Object3D | null>, speed = 1) {
+function useGlassRotation(ref: RefObject<THREE.Object3D | null>, speed = 1, interactive = true, motionScale = 1) {
   const { pointer } = useThree()
   const rot = useRef({ rx: 0, ry: 0 })
 
   useFrame((_, delta) => {
     if (!ref.current) return
-    rot.current.rx += delta * 0.15 * speed
-    rot.current.ry += delta * 0.25 * speed
-    ref.current.rotation.x = rot.current.rx + pointer.y * 0.3
-    ref.current.rotation.y = rot.current.ry + pointer.x * 0.2
-    ref.current.rotation.z = pointer.x * 0.1
+    rot.current.rx += delta * 0.15 * speed * motionScale
+    rot.current.ry += delta * 0.25 * speed * motionScale
+    ref.current.rotation.x = rot.current.rx + (interactive ? pointer.y * 0.3 : 0)
+    ref.current.rotation.y = rot.current.ry + (interactive ? pointer.x * 0.2 : 0)
+    ref.current.rotation.z = interactive ? pointer.x * 0.1 : Math.sin(rot.current.ry) * 0.08
   })
 }
 
@@ -114,6 +111,7 @@ function useRoundedCubeGeometry() {
 function SceneLogo() {
   const [texture, setTexture] = useState<THREE.CanvasTexture | null>(null)
   const { viewport, gl } = useThree()
+  const { isDesktop } = useResponsiveSettings()
 
   useEffect(() => {
     let disposed = false
@@ -124,8 +122,8 @@ function SceneLogo() {
       if (disposed) return
 
       const canvas = document.createElement('canvas')
-      canvas.width = 4096
-      canvas.height = 1125
+      canvas.width = isDesktop ? 4096 : 2048
+      canvas.height = isDesktop ? 1125 : 563
       const context = canvas.getContext('2d')
       if (!context) return
 
@@ -146,7 +144,7 @@ function SceneLogo() {
         return null
       })
     }
-  }, [gl])
+  }, [gl, isDesktop])
 
   if (!texture) return null
 
@@ -170,9 +168,23 @@ interface FloatingCubeProps {
   count: number
   scale: number
   radius: number
+  interactive: boolean
+  motionScale: number
+  materialResolution: number
+  materialSamples: number
 }
 
-function FloatingCube({ geometry, index, count, scale, radius }: FloatingCubeProps) {
+function FloatingCube({
+  geometry,
+  index,
+  count,
+  scale,
+  radius,
+  interactive,
+  motionScale,
+  materialResolution,
+  materialSamples,
+}: FloatingCubeProps) {
   const meshRef = useRef<THREE.Mesh>(null)
   const { pointer, viewport } = useThree()
   const phase = (index / count) * Math.PI * 2
@@ -185,17 +197,13 @@ function FloatingCube({ geometry, index, count, scale, radius }: FloatingCubePro
     ),
   )
   const velocity = useRef(new THREE.Vector3())
-  useGlassRotation(meshRef, 0.7 + index * 0.12)
+  useGlassRotation(meshRef, 0.7 + index * 0.12, interactive, motionScale)
 
   useFrame((state, delta) => {
     if (!meshRef.current) return
 
     const t = state.clock.elapsedTime * 0.55
-    const pointerWorld = new THREE.Vector3(
-      pointer.x * viewport.width * 0.5,
-      pointer.y * viewport.height * 0.5,
-      0,
-    )
+    const pointerWorld = new THREE.Vector3(pointer.x * viewport.width * 0.5, pointer.y * viewport.height * 0.5, 0)
     const target = new THREE.Vector3(
       Math.cos(t + phase) * radius,
       Math.sin(t * 0.85 + verticalPhase) * radius * 0.58,
@@ -203,7 +211,7 @@ function FloatingCube({ geometry, index, count, scale, radius }: FloatingCubePro
     )
 
     const distance = position.current.distanceTo(pointerWorld)
-    const pointerActive = Math.abs(pointer.x) > 0.015 || Math.abs(pointer.y) > 0.015
+    const pointerActive = interactive && (Math.abs(pointer.x) > 0.015 || Math.abs(pointer.y) > 0.015)
     if (pointerActive && distance < 0.75) {
       const release = position.current.clone().sub(pointerWorld).normalize().multiplyScalar((0.75 - distance) * 14 * delta)
       velocity.current.add(release)
@@ -219,7 +227,69 @@ function FloatingCube({ geometry, index, count, scale, radius }: FloatingCubePro
 
   return (
     <mesh ref={meshRef} geometry={geometry} scale={scale}>
-      <MeshTransmissionMaterial {...glassMaterialProps} />
+      <MeshTransmissionMaterial
+        {...glassMaterialProps}
+        samples={materialSamples}
+        resolution={materialResolution}
+      />
+    </mesh>
+  )
+}
+
+interface PrimaryGlassCubeProps {
+  geometry: THREE.BufferGeometry
+  materialResolution: number
+  materialSamples: number
+  motionScale?: number
+}
+
+function PrimaryGlassCube({
+  geometry,
+  materialResolution,
+  materialSamples,
+  motionScale = 1,
+}: PrimaryGlassCubeProps) {
+  const meshRef = useRef<THREE.Mesh>(null)
+  const { pointer } = useThree()
+
+  useGlassRotation(meshRef, 0.5, true, motionScale)
+
+  useFrame((state) => {
+    if (!meshRef.current) return
+
+    const breathe = 1 + Math.sin(state.clock.elapsedTime * 0.7) * 0.025
+    meshRef.current.scale.setScalar(breathe)
+    meshRef.current.position.x = pointer.x * 0.08
+    meshRef.current.position.y = pointer.y * 0.06
+  })
+
+  return (
+    <mesh ref={meshRef} geometry={geometry}>
+      <MeshTransmissionMaterial
+        {...glassMaterialProps}
+        samples={materialSamples}
+        resolution={materialResolution}
+      />
+    </mesh>
+  )
+}
+
+function SingleGlassCube() {
+  const geometry = useRoundedCubeGeometry()
+  const { viewport } = useThree()
+  const meshRef = useRef<THREE.Mesh>(null)
+  const { isTabletUp, prefersReducedMotion } = useResponsiveSettings()
+  const scale = Math.min(viewport.width / (isTabletUp ? 2.2 : 1.45), isTabletUp ? 2.35 : 1.65)
+
+  useGlassRotation(meshRef, 0.65, false, prefersReducedMotion ? 0.25 : 0.45)
+
+  return (
+    <mesh ref={meshRef} geometry={geometry} scale={scale}>
+      <MeshTransmissionMaterial
+        {...glassMaterialProps}
+        samples={isTabletUp ? 3 : 2}
+        resolution={isTabletUp ? 384 : 256}
+      />
     </mesh>
   )
 }
@@ -229,25 +299,22 @@ function GlassCubeCluster() {
   const { viewport } = useThree()
   const baseScale = Math.min(viewport.width / 2, 2.8)
 
-  useEffect(() => {
-    console.log('[GlassCube] Magnetic glass cluster created')
-  }, [])
-
   const cubes = [
-    { scale: 1, radius: 0.1 },
     { scale: 0.26, radius: 0.6 },
     { scale: 0.22, radius: 0.7 },
     { scale: 0.3, radius: 0.8 },
     { scale: 0.2, radius: 0.9 },
     { scale: 0.24, radius: 1 },
-    { scale: 0.18, radius: 1.52 },
-    { scale: 0.22, radius: 1.44 },
-    { scale: 0.12, radius: 1.6 },
-    { scale: 0.3, radius: 1.2 },
+    { scale: 0.28, radius: 1.22 },
   ]
 
   return (
     <group scale={baseScale}>
+      <PrimaryGlassCube
+        geometry={geometry}
+        materialResolution={512}
+        materialSamples={3}
+      />
       {cubes.map((cube, index) => (
         <FloatingCube
           key={index}
@@ -256,6 +323,10 @@ function GlassCubeCluster() {
           count={cubes.length}
           radius={cube.radius}
           scale={cube.scale}
+          interactive
+          motionScale={1}
+          materialResolution={256}
+          materialSamples={2}
         />
       ))}
     </group>
@@ -295,13 +366,14 @@ function FallbackCubeGeometry() {
 export default function GlassCube() {
   const [contextLost, setContextLost] = useState(false)
   const [useFallback, setUseFallback] = useState(false)
+  const { isDesktop, isTabletUp, prefersReducedMotion } = useResponsiveSettings()
+  const simplifiedHero = !isDesktop || prefersReducedMotion
 
   const handleContextLost = useCallback(() => {
     setContextLost(true)
     setTimeout(() => {
-      setUseFallback(false)
+      setUseFallback(true)
       setContextLost(false)
-      console.log('[GlassCube] Switching to fallback renderer')
     }, 1500)
   }, [])
 
@@ -326,20 +398,13 @@ export default function GlassCube() {
           powerPreference: 'high-performance',
         }}
         style={{ background: 'transparent' }}
-        dpr={[1, 2]}
+        dpr={simplifiedHero ? [1, isTabletUp ? 1.35 : 1.15] : [1, 2]}
         frameloop="always"
         onCreated={({ gl, scene }) => {
           gl.setClearColor(0x000000, 0)
           scene.background = null
           gl.toneMapping = THREE.ACESFilmicToneMapping
           gl.toneMappingExposure = 1
-          console.log('[GlassCube] Canvas created')
-
-          const ctx = gl.getContext()
-          const debugInfo = ctx.getExtension('WEBGL_debug_renderer_info')
-          if (debugInfo) {
-            console.log('[GlassCube] GPU:', ctx.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL))
-          }
         }}
       >
         <SceneSetup onContextLost={handleContextLost} />
@@ -348,7 +413,7 @@ export default function GlassCube() {
         <directionalLight position={[0, 2, 3]} intensity={2} />
 
         <SceneLogo />
-        {useFallback ? <FallbackCubeGeometry /> : <GlassCubeCluster />}
+        {useFallback ? <FallbackCubeGeometry /> : simplifiedHero ? <SingleGlassCube /> : <GlassCubeCluster />}
 
         <Environment preset="city" background={false} />
       </Canvas>
