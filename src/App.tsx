@@ -37,7 +37,6 @@ export default function App() {
   useEffect(() => {
     const hero = document.querySelector('#hero')
     if (!hero) {
-      setHeroInView(false)
       return
     }
 

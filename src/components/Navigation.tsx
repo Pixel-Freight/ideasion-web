@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import { services } from "../data/siteContent";
@@ -24,28 +24,28 @@ export default function Navigation({
   onHoverStart,
   onHoverEnd,
 }: NavigationProps) {
-  const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const currentLocationKey = `${location.pathname}${location.hash}`;
+  const [openLocationKey, setOpenLocationKey] = useState<string | null>(null);
+  const isOpen = openLocationKey === currentLocationKey;
   const isHome = location.pathname === "/";
   const showFullList = isDesktop && isHome && heroInView;
   const showMenuButton = !showFullList;
 
-  useEffect(() => {
-    setIsOpen(false);
-  }, [location.pathname, location.hash]);
+  const closeNavigation = useCallback(() => setOpenLocationKey(null), []);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setIsOpen(false);
+      if (event.key === "Escape") closeNavigation();
     };
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
+  }, [closeNavigation]);
 
   const handleNavigate = (href: string) => {
-    setIsOpen(false);
+    closeNavigation();
 
     if (href.startsWith("/#")) {
       navigate(href);
@@ -96,7 +96,9 @@ export default function Navigation({
           type="button"
           aria-label="Open navigation"
           aria-expanded={isOpen}
-          onClick={() => setIsOpen((current) => !current)}
+          onClick={() => {
+            setOpenLocationKey((current) => (current === currentLocationKey ? null : currentLocationKey));
+          }}
           onMouseEnter={onHoverStart}
           onMouseLeave={onHoverEnd}
           className="fixed top-8 right-8 z-50 flex h-12 w-12 items-center justify-center border border-border bg-bg-card text-text-primary backdrop-blur-md transition-colors duration-300 hover:border-border-hover"
@@ -127,33 +129,33 @@ export default function Navigation({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25 }}
-              onClick={() => setIsOpen(false)}
+              onClick={closeNavigation}
             />
             <motion.aside
               key="drawer"
-              className="fixed top-0 right-0 z-50 grid h-full w-[min(24rem,88vw)] grid-rows-[auto_1fr_auto] border-l border-border bg-[#081014] px-6 py-6 sm:px-10 sm:py-10"
+              className="nav-drawer"
               initial={{ x: "100%" }}
               animate={{ x: "0%" }}
               exit={{ x: "100%" }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             >
-              <div className="flex justify-end">
+              <div className="nav-drawer-top">
                 <button
                   type="button"
                   aria-label="Close navigation"
-                  onClick={() => setIsOpen(false)}
+                  onClick={closeNavigation}
                   onMouseEnter={onHoverStart}
                   onMouseLeave={onHoverEnd}
-                  className="flex h-11 w-11 items-center justify-center border border-border text-text-primary transition-colors duration-300 hover:border-border-hover hover:text-text-secondary"
+                  className="nav-drawer-close"
                 >
-                  <span className="relative block h-5 w-5" aria-hidden="true">
-                    <span className="absolute left-1/2 top-1/2 block h-px w-6 -translate-x-1/2 -translate-y-1/2 rotate-45 bg-current" />
-                    <span className="absolute left-1/2 top-1/2 block h-px w-6 -translate-x-1/2 -translate-y-1/2 -rotate-45 bg-current" />
+                  <span className="nav-drawer-close-icon" aria-hidden="true">
+                    <span />
+                    <span />
                   </span>
                 </button>
               </div>
 
-              <nav className="flex flex-col justify-center gap-4 self-center justify-self-stretch py-10 sm:gap-5">
+              <nav className="nav-drawer-links">
                 {navItems.map((item) => (
                   <button
                     key={item.label}
@@ -161,19 +163,18 @@ export default function Navigation({
                     onClick={() => handleNavigate(item.href)}
                     onMouseEnter={onHoverStart}
                     onMouseLeave={onHoverEnd}
-                    className="w-fit text-left font-display text-[clamp(2rem,8vw,3rem)] font-light leading-tight text-text-primary transition-colors duration-300 hover:text-text-secondary"
+                    className="nav-drawer-link"
                   >
                     {item.label}
                   </button>
                 ))}
               </nav>
 
-              <div className="flex flex-col gap-3 text-xs uppercase tracking-[0.18em] text-text-secondary">
+              <div className="nav-drawer-bottom">
                 <a
                   href="mailto:hello@ideasion.id"
                   onMouseEnter={onHoverStart}
                   onMouseLeave={onHoverEnd}
-                  className="w-fit text-text-primary transition-colors duration-300 hover:text-text-secondary"
                 >
                   hello@ideasion.id
                 </a>
