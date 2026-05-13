@@ -1,18 +1,17 @@
 import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { Link } from 'react-router-dom'
+import { services } from '../data/siteContent'
 
 interface ContactSectionProps {
   onHoverStart: () => void
   onHoverEnd: () => void
 }
 
-const footerLinks = [
-  { label: 'Branding', href: '/services/branding' },
-  { label: 'Visual Identity', href: '/services/visual-identity' },
-  { label: 'Social Media', href: '/services/social-media' },
-  { label: 'Website', href: '/services/website' },
-]
+const footerLinks = services.map((service) => ({
+  label: service.title,
+  href: `/services/${service.slug}`,
+}))
 
 export default function ContactSection({ onHoverStart, onHoverEnd }: ContactSectionProps) {
   const sectionRef = useRef<HTMLElement>(null)
@@ -81,6 +80,16 @@ export default function ContactSection({ onHoverStart, onHoverEnd }: ContactSect
           <p className="text-sm leading-relaxed text-text-secondary">
             Design will only become a graphic if it cannot solved the problems.
           </p>
+          <a
+            href="https://freightpx.com"
+            target="_blank"
+            rel="noreferrer"
+            className="mt-6 inline-flex text-xs uppercase tracking-[0.18em] text-text-secondary transition-colors duration-300 hover:text-text-primary"
+            onMouseEnter={onHoverStart}
+            onMouseLeave={onHoverEnd}
+          >
+            In Collaboration with freightpx.com
+          </a>
         </div>
 
         <nav className="flex flex-col gap-4 text-xs uppercase tracking-[0.18em] text-text-secondary md:justify-self-center">

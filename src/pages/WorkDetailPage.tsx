@@ -1,5 +1,42 @@
 import { Link, Navigate, useParams } from 'react-router-dom'
-import { getProjectBySlug, projects } from '../data/siteContent'
+import { motion } from 'framer-motion'
+import { getProjectBySlug, projects, type ProjectMedia } from '../data/siteContent'
+
+const reveal = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0 },
+}
+
+function ProjectMediaBlock({ media, title, index }: { media: ProjectMedia; title: string; index: number }) {
+  const label = media.alt ?? `${title} media ${index + 1}`
+
+  if (media.type === 'video') {
+    return (
+      <motion.video
+        className="h-full w-full object-cover"
+        src={media.src}
+        poster={media.poster}
+        aria-label={label}
+        muted
+        loop
+        playsInline
+        autoPlay
+      />
+    )
+  }
+
+  return (
+    <motion.img
+      src={media.src}
+      alt={label}
+      className="h-full w-full object-cover"
+      initial={{ scale: 1.04 }}
+      whileInView={{ scale: 1 }}
+      viewport={{ once: true, amount: 0.35 }}
+      transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+    />
+  )
+}
 
 export default function WorkDetailPage() {
   const { projectSlug = '' } = useParams()
@@ -13,60 +50,86 @@ export default function WorkDetailPage() {
   const nextProject = projects[(currentIndex + 1) % projects.length]
 
   return (
-    <main
-      className="min-h-screen pt-36 pb-24"
-      style={{ background: 'linear-gradient(180deg, #05090B 0%, #081014 55%, #05090B 100%)' }}
-    >
-      <section className="section-gutter mb-16 grid gap-10 lg:grid-cols-[1fr_0.9fr]">
-        <div>
-          <div className="mb-6 flex flex-wrap items-center gap-4 text-xs uppercase tracking-[0.18em] text-text-secondary">
-            <span>{project.year}</span>
-            {project.tags.map((tag) => (
-              <span key={tag}>{tag}</span>
-            ))}
-          </div>
-          <h1 className="font-display text-5xl font-light leading-[0.95] text-text-primary md:text-7xl">
-            {project.title}
-          </h1>
-        </div>
-        <p className="max-w-2xl text-base leading-relaxed text-text-secondary md:text-lg lg:pt-10">
-          {project.summary}
-        </p>
-      </section>
+    <main className="work-detail-shell min-h-screen bg-bg-base text-text-primary">
+      <aside className="work-detail-info">
+        <motion.div
+          className="work-detail-info-inner"
+          initial="hidden"
+          animate="visible"
+          transition={{ staggerChildren: 0.07 }}
+        >
+          <div className="flex flex-col gap-6">
+            <motion.div variants={reveal} className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.18em] text-text-secondary">
+              <span>{project.year}</span>
+              {project.tags.map((tag) => (
+                <span key={tag} className="border border-border px-3 py-2">
+                  {tag}
+                </span>
+              ))}
+            </motion.div>
 
-      <section className="section-gutter mb-16">
-        <div className="aspect-[16/10] overflow-hidden">
-          <img src={project.coverImage} alt={project.title} className="h-full w-full object-cover" />
-        </div>
-      </section>
+            <motion.h1 variants={reveal} className="font-display text-[clamp(3.25rem,6vw,6.5rem)] font-light leading-[0.9] tracking-tight">
+              {project.title}
+            </motion.h1>
 
-      <section className="section-gutter mb-20 grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
-        <div>
-          <span className="mb-4 block text-xs uppercase tracking-[0.3em] text-text-secondary">
-            Credits
-          </span>
-          <div className="flex flex-col gap-3 text-sm text-text-secondary">
-            {project.credits.map((credit) => (
-              <span key={credit}>{credit}</span>
-            ))}
+            <motion.p variants={reveal} className="text-sm leading-relaxed text-text-secondary md:text-base">
+              {project.summary}
+            </motion.p>
           </div>
-        </div>
-        <div className="grid gap-6 md:grid-cols-2">
-          {project.gallery.map((image, index) => (
-            <div key={`${image}-${index}`} className="aspect-[4/5] overflow-hidden">
-              <img src={image} alt={`${project.title} view ${index + 1}`} className="h-full w-full object-cover" />
+
+          <motion.div variants={reveal} className="flex flex-col gap-8">
+            <div>
+              <span className="mb-4 block text-xs uppercase tracking-[0.3em] text-text-secondary">
+                Credits
+              </span>
+              <div className="flex flex-col gap-2 text-sm text-text-secondary">
+                {project.credits.map((credit) => (
+                  <span key={credit}>{credit}</span>
+                ))}
+              </div>
             </div>
-          ))}
-        </div>
-      </section>
 
-      <section className="section-gutter border-t border-border pt-12">
-        <Link to={`/works/${nextProject.slug}`} className="group inline-flex flex-col gap-3">
-          <span className="text-xs uppercase tracking-[0.3em] text-text-secondary">Next Project</span>
-          <span className="font-display text-4xl font-light text-text-primary transition-colors duration-300 group-hover:text-text-secondary">
-            {nextProject.title}
-          </span>
-        </Link>
+            <Link to={`/works/${nextProject.slug}`} className="group flex w-fit flex-col gap-2">
+              <span className="text-xs uppercase tracking-[0.3em] text-text-secondary">
+                Next Project
+              </span>
+              <span className="font-display text-3xl font-light leading-none text-text-primary transition-colors duration-300 group-hover:text-text-secondary">
+                {nextProject.title}
+              </span>
+            </Link>
+          </motion.div>
+        </motion.div>
+      </aside>
+
+      <section className="work-detail-media-list" aria-label={`${project.title} project media`}>
+        <motion.div
+          className="work-detail-media work-detail-media-cover"
+          initial={{ opacity: 0, y: 32 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <motion.img
+            src={project.coverImage}
+            alt={`${project.title} cover`}
+            className="h-full w-full object-cover"
+            initial={{ scale: 1.04 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+          />
+        </motion.div>
+
+        {project.media.map((media, index) => (
+          <motion.div
+            key={`${media.src}-${index}`}
+            className="work-detail-media"
+            initial={{ opacity: 0, y: 36 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.22 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <ProjectMediaBlock media={media} title={project.title} index={index} />
+          </motion.div>
+        ))}
       </section>
     </main>
   )

@@ -97,6 +97,218 @@ body {
   padding-right: clamp(2.5rem, 8vw, 8rem);
 }
 
+.service-page {
+  height: calc(var(--service-panel-count, 1) * 100vh);
+}
+
+.service-horizontal-scroll {
+  position: sticky;
+  top: 0;
+  display: flex;
+  width: max-content;
+  height: 100vh;
+  overflow: hidden;
+  will-change: transform;
+}
+
+.service-progress {
+  position: fixed;
+  left: clamp(2.5rem, 8vw, 8rem);
+  right: clamp(2.5rem, 8vw, 8rem);
+  bottom: 2rem;
+  z-index: 8;
+  height: 1px;
+  transform-origin: 0 50%;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.service-panel {
+  position: relative;
+  display: grid;
+  flex: 0 0 100vw;
+  min-height: 100vh;
+  scroll-snap-align: start;
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, rgba(5, 9, 11, 0.95) 0%, rgba(8, 16, 20, 0.72) 52%, rgba(5, 9, 11, 0.95) 100%),
+    var(--color-bg-base);
+}
+
+.service-panel-mask {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, var(--color-bg-base) 0%, transparent 12%, transparent 88%, var(--color-bg-base) 100%),
+    linear-gradient(180deg, var(--color-bg-base) 0%, transparent 20%, transparent 80%, var(--color-bg-base) 100%);
+}
+
+.service-intro-panel {
+  grid-template-columns: minmax(0, 0.92fr) minmax(28rem, 0.78fr);
+  align-items: center;
+  gap: clamp(3rem, 7vw, 8rem);
+  padding: clamp(7rem, 12vh, 10rem) clamp(2.5rem, 8vw, 8rem);
+}
+
+.service-intro-copy,
+.service-project-copy {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 3vh, 2.5rem);
+}
+
+.service-intro-media {
+  position: relative;
+  z-index: 1;
+  height: min(72vh, 48rem);
+  min-height: 28rem;
+  overflow: hidden;
+  clip-path: polygon(12% 0, 100% 0, 88% 100%, 0 100%);
+}
+
+.service-intro-media img,
+.service-project-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.service-project-panel {
+  grid-template-columns: minmax(30rem, 0.9fr) minmax(23rem, 0.55fr);
+  align-items: end;
+  gap: clamp(2rem, 5vw, 6rem);
+  padding: clamp(6rem, 10vh, 8rem) clamp(2.5rem, 8vw, 8rem);
+}
+
+.service-project-media {
+  position: relative;
+  z-index: 1;
+  height: min(76vh, 50rem);
+  overflow: hidden;
+  clip-path: polygon(0 0, 94% 0, 100% 100%, 6% 100%);
+}
+
+.service-project-copy {
+  align-self: center;
+}
+
+.service-collaboration {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6rem;
+  padding-top: clamp(8rem, 14vh, 11rem);
+  padding-bottom: clamp(4rem, 8vh, 6rem);
+  background:
+    linear-gradient(180deg, #05090B 0%, #081014 48%, #05090B 100%),
+    var(--color-bg-base);
+}
+
+.service-collaboration-copy {
+  display: flex;
+  max-width: 68rem;
+  flex-direction: column;
+  gap: clamp(1.5rem, 3vh, 2.5rem);
+}
+
+.service-footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  border-top: 1px solid var(--color-border);
+  padding-top: 2rem;
+}
+
+.contact-page,
+.not-found-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 5rem;
+  padding-top: clamp(8rem, 14vh, 11rem);
+  padding-bottom: clamp(4rem, 8vh, 6rem);
+  background:
+    linear-gradient(180deg, #05090B 0%, #081014 48%, #05090B 100%),
+    var(--color-bg-base);
+}
+
+.contact-page-hero,
+.not-found-copy {
+  display: flex;
+  max-width: 76rem;
+  flex-direction: column;
+  gap: clamp(1.5rem, 3vh, 2.5rem);
+}
+
+.contact-page-grid {
+  display: grid;
+  gap: clamp(2rem, 5vw, 5rem);
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 0.8fr);
+}
+
+.contact-page-panel {
+  display: flex;
+  min-height: 24rem;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 3rem;
+  border-top: 1px solid var(--color-border);
+  padding-top: 2rem;
+}
+
+.contact-page-footer,
+.not-found-links {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 3rem;
+  border-top: 1px solid var(--color-border);
+  padding-top: 2rem;
+}
+
+.work-detail-shell {
+  display: grid;
+  grid-template-columns: minmax(20rem, 25vw) minmax(0, 1fr);
+  gap: clamp(1.5rem, 3vw, 3rem);
+  padding: clamp(7rem, 12vh, 9rem) clamp(1.5rem, 4vw, 4rem) 4rem;
+}
+
+.work-detail-info {
+  position: relative;
+}
+
+.work-detail-info-inner {
+  position: sticky;
+  top: clamp(7rem, 12vh, 9rem);
+  display: flex;
+  min-height: calc(100vh - clamp(9rem, 15vh, 12rem));
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 4rem;
+  padding-right: clamp(0rem, 2vw, 2rem);
+}
+
+.work-detail-media-list {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+.work-detail-media {
+  min-height: min(84vh, 58rem);
+  overflow: hidden;
+  background: #081014;
+}
+
+.work-detail-media-cover {
+  min-height: min(88vh, 62rem);
+}
+
 .contact-shell {
   padding-top: clamp(8rem, 14vh, 11rem);
   padding-bottom: clamp(7rem, 12vh, 10rem);
@@ -195,5 +407,91 @@ body {
 
   .cursor-dot {
     display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .service-page {
+    height: auto;
+  }
+
+  .service-horizontal-scroll {
+    display: block;
+    width: 100%;
+    height: auto;
+    position: static;
+    transform: none !important;
+    overflow: visible;
+    scroll-snap-type: y mandatory;
+  }
+
+  .service-progress {
+    display: none;
+  }
+
+  .service-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100svh;
+    gap: 2rem;
+    padding: 7rem 1.5rem 3rem;
+    scroll-snap-align: start;
+  }
+
+  .service-collaboration {
+    min-height: 100svh;
+    gap: 4rem;
+    padding: 7rem 1.5rem 3rem;
+  }
+
+  .service-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .contact-page,
+  .not-found-page {
+    gap: 4rem;
+    padding: 7rem 1.5rem 3rem;
+  }
+
+  .contact-page-grid,
+  .contact-page-footer,
+  .not-found-links {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .contact-page-panel {
+    min-height: auto;
+  }
+
+  .service-intro-media,
+  .service-project-media {
+    order: -1;
+    width: 100%;
+    height: 42svh;
+    min-height: 18rem;
+    clip-path: polygon(0 0, 100% 0, 92% 100%, 0 100%);
+  }
+
+  .work-detail-shell {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    padding: 7rem 1.5rem 3rem;
+  }
+
+  .work-detail-info-inner {
+    position: static;
+    min-height: auto;
+    gap: 3rem;
+    padding-right: 0;
+  }
+
+  .work-detail-media {
+    min-height: 62svh;
   }
 }

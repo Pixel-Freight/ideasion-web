@@ -1,51 +1,59 @@
-import { useEffect, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { useLocation, useNavigate } from "react-router-dom";
+import { services } from "../data/siteContent";
 
 const navItems = [
-  { label: 'Branding', href: '/services/branding' },
-  { label: 'Visual Identity', href: '/services/visual-identity' },
-  { label: 'Social Media', href: '/services/social-media' },
-  { label: 'Website', href: '/services/website' },
-  { label: 'Contact Us', href: '/#contact' },
-]
+  ...services.map((service) => ({
+    label: service.title,
+    href: `/services/${service.slug}`,
+  })),
+  { label: "Contact Us", href: "/contact" },
+];
 
 interface NavigationProps {
-  heroInView: boolean
-  isDesktop: boolean
-  onHoverStart: () => void
-  onHoverEnd: () => void
+  heroInView: boolean;
+  isDesktop: boolean;
+  onHoverStart: () => void;
+  onHoverEnd: () => void;
 }
 
-export default function Navigation({ heroInView, isDesktop, onHoverStart, onHoverEnd }: NavigationProps) {
-  const [isOpen, setIsOpen] = useState(false)
-  const location = useLocation()
-  const navigate = useNavigate()
-  const showFullList = isDesktop && location.pathname === '/' && heroInView
+export default function Navigation({
+  heroInView,
+  isDesktop,
+  onHoverStart,
+  onHoverEnd,
+}: NavigationProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isHome = location.pathname === "/";
+  const showFullList = isDesktop && isHome && heroInView;
+  const showMenuButton = !showFullList;
 
   useEffect(() => {
-    setIsOpen(false)
-  }, [location.pathname, location.hash])
+    setIsOpen(false);
+  }, [location.pathname, location.hash]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setIsOpen(false)
-    }
+      if (event.key === "Escape") setIsOpen(false);
+    };
 
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [])
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   const handleNavigate = (href: string) => {
-    setIsOpen(false)
+    setIsOpen(false);
 
-    if (href.startsWith('/#')) {
-      navigate(href)
-      return
+    if (href.startsWith("/#")) {
+      navigate(href);
+      return;
     }
 
-    navigate(href)
-  }
+    navigate(href);
+  };
 
   return (
     <>
@@ -83,7 +91,7 @@ export default function Navigation({ heroInView, isDesktop, onHoverStart, onHove
         ) : null}
       </AnimatePresence>
 
-      {!showFullList ? (
+      {showMenuButton ? (
         <button
           type="button"
           aria-label="Open navigation"
@@ -94,9 +102,15 @@ export default function Navigation({ heroInView, isDesktop, onHoverStart, onHove
           className="fixed top-8 right-8 z-50 flex h-12 w-12 items-center justify-center border border-border bg-bg-card text-text-primary backdrop-blur-md transition-colors duration-300 hover:border-border-hover"
         >
           <span className="flex flex-col gap-1.5">
-            <span className={`block h-px w-5 bg-current transition-transform duration-300 ${isOpen ? 'translate-y-[7px] rotate-45' : ''}`} />
-            <span className={`block h-px w-5 bg-current transition-opacity duration-300 ${isOpen ? 'opacity-0' : 'opacity-100'}`} />
-            <span className={`block h-px w-5 bg-current transition-transform duration-300 ${isOpen ? '-translate-y-[7px] -rotate-45' : ''}`} />
+            <span
+              className={`block h-px w-5 bg-current transition-transform duration-300 ${isOpen ? "translate-y-[7px] rotate-45" : ""}`}
+            />
+            <span
+              className={`block h-px w-5 bg-current transition-opacity duration-300 ${isOpen ? "opacity-0" : "opacity-100"}`}
+            />
+            <span
+              className={`block h-px w-5 bg-current transition-transform duration-300 ${isOpen ? "-translate-y-[7px] -rotate-45" : ""}`}
+            />
           </span>
         </button>
       ) : null}
@@ -117,26 +131,29 @@ export default function Navigation({ heroInView, isDesktop, onHoverStart, onHove
             />
             <motion.aside
               key="drawer"
-              className="fixed top-0 right-0 z-50 flex h-full w-[min(26rem,88vw)] flex-col justify-between border-l border-border bg-[#081014] p-10"
-              initial={{ x: '100%' }}
-              animate={{ x: '0%' }}
-              exit={{ x: '100%' }}
+              className="fixed top-0 right-0 z-50 grid h-full w-[min(24rem,88vw)] grid-rows-[auto_1fr_auto] border-l border-border bg-[#081014] px-6 py-6 sm:px-10 sm:py-10"
+              initial={{ x: "100%" }}
+              animate={{ x: "0%" }}
+              exit={{ x: "100%" }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             >
-              <div className="flex items-center justify-between">
-                <Link to="/" className="font-display text-2xl font-light text-text-primary">
-                  Ideasion
-                </Link>
+              <div className="flex justify-end">
                 <button
                   type="button"
+                  aria-label="Close navigation"
                   onClick={() => setIsOpen(false)}
-                  className="text-xs uppercase tracking-[0.2em] text-text-secondary transition-colors duration-300 hover:text-text-primary"
+                  onMouseEnter={onHoverStart}
+                  onMouseLeave={onHoverEnd}
+                  className="flex h-11 w-11 items-center justify-center border border-border text-text-primary transition-colors duration-300 hover:border-border-hover hover:text-text-secondary"
                 >
-                  Close
+                  <span className="relative block h-5 w-5" aria-hidden="true">
+                    <span className="absolute left-1/2 top-1/2 block h-px w-6 -translate-x-1/2 -translate-y-1/2 rotate-45 bg-current" />
+                    <span className="absolute left-1/2 top-1/2 block h-px w-6 -translate-x-1/2 -translate-y-1/2 -rotate-45 bg-current" />
+                  </span>
                 </button>
               </div>
 
-              <nav className="mt-16 flex flex-col gap-6">
+              <nav className="flex flex-col justify-center gap-4 self-center justify-self-stretch py-10 sm:gap-5">
                 {navItems.map((item) => (
                   <button
                     key={item.label}
@@ -144,20 +161,28 @@ export default function Navigation({ heroInView, isDesktop, onHoverStart, onHove
                     onClick={() => handleNavigate(item.href)}
                     onMouseEnter={onHoverStart}
                     onMouseLeave={onHoverEnd}
-                    className="w-fit text-left font-display text-4xl font-light text-text-primary transition-colors duration-300 hover:text-text-secondary"
+                    className="w-fit text-left font-display text-[clamp(2rem,8vw,3rem)] font-light leading-tight text-text-primary transition-colors duration-300 hover:text-text-secondary"
                   >
                     {item.label}
                   </button>
                 ))}
               </nav>
 
-              <div className="text-xs uppercase tracking-[0.18em] text-text-secondary">
-                hello@ideasion.id
+              <div className="flex flex-col gap-3 text-xs uppercase tracking-[0.18em] text-text-secondary">
+                <a
+                  href="mailto:hello@ideasion.id"
+                  onMouseEnter={onHoverStart}
+                  onMouseLeave={onHoverEnd}
+                  className="w-fit text-text-primary transition-colors duration-300 hover:text-text-secondary"
+                >
+                  hello@ideasion.id
+                </a>
+                <span>@ideasion.id</span>
               </div>
             </motion.aside>
           </>
         ) : null}
       </AnimatePresence>
     </>
-  )
+  );
 }

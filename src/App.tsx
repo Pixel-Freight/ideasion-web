@@ -5,6 +5,7 @@ import CustomCursor from './components/CustomCursor'
 import Navigation from './components/Navigation'
 import { useResponsiveSettings } from './hooks/useResponsiveSettings'
 import HomePage from './pages/HomePage'
+import ContactPage from './pages/ContactPage'
 import NotFoundPage from './pages/NotFoundPage'
 import ServicePage from './pages/ServicePage'
 import WorkDetailPage from './pages/WorkDetailPage'
@@ -86,6 +87,8 @@ export default function App() {
           path="/"
           element={<HomePage onHoverStart={handleHoverStart} onHoverEnd={handleHoverEnd} />}
         />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/services/website" element={<Navigate to="/services/webapp-development" replace />} />
         <Route path="/services/:serviceSlug" element={<ServicePage />} />
         <Route path="/works/:projectSlug" element={<WorkDetailPage />} />
         <Route path="/not-found" element={<NotFoundPage />} />
